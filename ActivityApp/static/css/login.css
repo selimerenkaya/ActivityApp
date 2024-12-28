@@ -1,0 +1,78 @@
+.container {
+    padding: 20px;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-container2 {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.feedback {
+    display: none;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* Checkbox kutusunu gizle */
+.custom-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+/* Label tasarımı */
+.custom-checkbox label {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0;
+    padding-left: 35px; /* Sol alana checkbox simgesi için yer aç */
+    color: #333;
+}
+
+/* Kare kutu (checkbox görseli) */
+.custom-checkbox label:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #007bff;
+    border-radius: 3px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+/* İşaretli durum */
+.custom-checkbox input[type="checkbox"]:checked + label:before {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* İşaret simgesi (check işareti) */
+.custom-checkbox input[type="checkbox"]:checked + label:after {
+    content: "\2713";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Hover efekti */
+.custom-checkbox label:hover:before {
+    border-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.5);
+}
+
+

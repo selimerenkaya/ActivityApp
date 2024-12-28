@@ -1,0 +1,50 @@
+.navbar {
+    background-color: #003c50;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    height: 80px;
+}
+.navbar-brand img {
+    height: 60px;
+    width: auto;
+    max-height: 100%;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+    text-decoration: underline;
+}
+
+.dropdown-menu {
+    background-color: #3e6670; /* Koyu arka plan */
+    border: none;
+}
+.dropdown-item {
+    color: #fff;
+    transition: background-color 0.3s;
+}
+.dropdown-item:hover {
+    background-color: #29434a;
+    color: #fff;
+}
+
+/* Varsayılan profil linki */
+.profile-link {
+    transition: background-color 0.3s ease;
+}
+
+/* Dropdown açıkken aktif stil */
+.profile-link.active-dropdown {
+    background-color: #3e6670; /* Arka plan rengi değiştirildi */
+    color: #ffffff; /* Yazı rengi */
+    border-radius: 5px; /* Hafif yuvarlak köşe */
+}
+
+.custom-width {
+    width: 450px; /* Özel genişlik */
+}
+

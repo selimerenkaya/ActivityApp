@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.event-section {
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+.event-card {
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.event-card:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.event-title {
+    color: #5295e8;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #5295e8;
+    color: white;
+}
+
+.event-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.event-item:hover {
+    background-color: #f1f1f1;
+}
+
+.event-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #ddd;
+}
+
+.event-card .event-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.event-card .event-short-details {
+    font-size: 1rem;
+    color: #666;
+}
+
+.event-card .event-owner {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.event-card .event-location {
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.event-card .event-participants {
+    font-size: 0.9rem;
+    color: #444;
+}

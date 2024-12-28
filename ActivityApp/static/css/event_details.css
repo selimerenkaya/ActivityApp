@@ -1,0 +1,319 @@
+.event-body { 
+    background-color: #f9f9f9;
+}
+
+/* Genel yazı tipi */
+.event-details-page {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Etkinlik Görseli Konteyneri */
+.event-details-page .etkinlik-photo-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Etkinlik Görseli */
+.event-details-page .etkinlik-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.event-details-page .etkinlik-photo:hover {
+    transform: scale(1.05);
+    filter: brightness(0.9);
+}
+
+/* Başlık ve Zaman Konteyneri */
+.event-details-page .etkinlik-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+    color: white;
+    padding: 1rem 1.5rem;
+    box-sizing: border-box;
+}
+
+/* Başlık Stili */
+.event-details-page .etkinlik-baslik {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Zaman Stili */
+.event-details-page .etkinlik-zaman {
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    color: #dcdcdc;
+}
+
+
+/* İçerik bölümü */
+.event-details-page .container {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Liste düzeni */
+.event-details-page ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.event-details-page ul li {
+    padding: 0.5rem 0;
+}
+
+.event-details-page ul li strong {
+    font-weight: 600;
+}
+
+/* Footer */
+.event-details-page footer {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+    margin-top: 2rem;
+    border-top: 3px solid #f39c12;
+}
+
+/* Katılımcılar container'ı için Flexbox düzeni */
+.etkinlik-katilimcilar-container {
+    display: flex;
+    flex-wrap: wrap; /* Yatayda taşan öğelerin alt satıra geçmesini sağlar */
+    gap: 20px; /* Katılımcılar arasına boşluk bırakır */
+    justify-content: center; /* Yatayda öğeleri ortalar */
+    align-items: center; /* Dikeyde öğeleri ortalar */
+    text-align: center; /* İçerikleri yatayda ortalar */
+}
+
+.katilimci-baslik {
+    text-align: center;
+    margin-bottom: 10px; /* Başlık ile <hr> arasında boşluk bırakır */
+}
+
+.katilimci-baslik + hr {
+    width: 14%; /* <hr>'yi başlığın genişliği kadar yapar */
+    margin: 0 auto 0 auto; /* Varsayılan boşlukları kaldırır */
+    border: 1px solid #000000; /* <hr> rengini başlıkla uyumlu yapar */
+}
+
+/* Katılımcı için stil */
+.katilimci-isim, .katilimci-kullanici-ad {
+    margin: 0;
+    padding: 10px;
+    font-size: 14px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); /* Yumuşak bir gölge */
+}
+
+.katilimci-kullanici-ad {
+    color: #3f3f3f; /* Mevcut yazı rengi */
+    text-shadow: 1px 1px 3px rgba(157, 157, 157, 0.2); /* Yumuşak bir gölge */
+}
+
+
+/* Katılımcı öğelerinin düzgün şekilde hizalanması */
+.katilimci {
+    background-color: #bad5f1; /* İsteğe bağlı arka plan rengi */
+    padding: 6px 16px;
+    border-radius: 10px;
+    width: 180px; /* Her katılımcıya bir genişlik verir */
+    text-align: center;
+}
+
+
+/* Ana kapsayıcı */
+.etkinlik-mesajlar-container {
+    padding: 15px 15px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mesaj listesi */
+.mesaj-liste {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    background-color: #f2f2f2;
+}
+
+/* Mesaj yapısı */
+.mesaj {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Gönderen adı */
+.mesaj-baslik {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgb(16, 61, 140);
+    margin-bottom: 5px;
+}
+
+/* Gönderen adı */
+.mesaj-baslik.gonderen {
+    text-align: right; /* Sağ tarafa hizala */
+    font-size: 12px;
+    font-weight: bold;
+    color: rgb(16, 61, 140);
+    margin-bottom: 5px;
+}
+
+/* Mesaj tarihi */
+.mesaj-tarih {
+    font-size: 10px;
+    color: #e5fbfd;
+    margin-top: 1px;
+    align-self: flex-end;
+    text-align: end;
+}
+
+/* Mesaj tarihi */
+.mesaj-tarih.gonderen {
+    align-self: flex-end;
+}
+
+/* Mesaj balonları */
+.mesaj-bubble {
+    max-width: 70%; /* Mesaj balonunun genişliğini sınırlandırır */
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-wrap: break-word; /* Kelimeleri alt satıra taşır */
+    word-break: break-word; /* Kelime taşma durumunda kırılmayı sağlar */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Gönderen mesaj balonu */
+.mesaj-bubble.gonderen {
+    background-color: #148dfe;
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+/* Alıcı mesaj balonu */
+.mesaj-bubble.alan {
+    background-color: #45b3ef;
+    color: #ffffff;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+
+/* Mesaj gönderim alanı */
+.mesaj-gonderim {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+.mesaj-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    padding: 10px 15px;
+    font-size: 14px;
+    outline: none;
+}
+
+.mesaj-gonder-btn {
+    margin-left: 10px;
+    background-color: #0084ff;
+    border: none;
+    color: #fff;
+    border-radius: 15px;
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.mesaj-gonder-btn:hover {
+    background-color: #005bb5;
+    transform: scale(1.1);
+}
+
+/* Gönder butonundaki simge */
+.mesaj-gonder-btn i {
+    font-size: 20px;
+}
+
+.etkinlik-onay-durum {
+    background-color: #f8d7da; /* Açık kırmızı arka plan */
+    color: #721c24; /* Koyu kırmızı yazı rengi */
+    border: 1px solid #f5c6cb; /* Hafif kırmızı bir kenarlık */
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center; /* Yazıyı ortalar */
+    border-radius: 5px; /* Köşe yuvarlama */
+    margin-top: 20px;
+}
+
+
+/* Katılımcı balonları için varsayılan renk ayarları */
+.katilimci.custom-color-0 { background-color: #f99d9d; color: #fff; }
+.katilimci.custom-color-1 { background-color: #bc9a33; color: #fff; }
+.katilimci.custom-color-2 { background-color: #6ab47b; color: #fff; }
+.katilimci.custom-color-3 { background-color: #328896; color: #fff; }
+.katilimci.custom-color-4 { background-color: #69affa; color: #fff; }
+.katilimci.custom-color-5 { background-color: #a36dfa; color: #fff; }
+.katilimci.custom-color-6 { background-color: #f8a059; color: #fff; }
+.katilimci.custom-color-7 { background-color: #9f7ce0; color: #fff; }
+.katilimci.custom-color-8 { background-color: #e86ca6; color: #fff; }
+.katilimci.custom-color-9 { background-color: #4bbe9b; color: #fff; }
+
+/* Mesaj balonları için varsayılan renk ayarları */
+.mesaj-bubble.custom-color-0 { background-color: #ff9999; color: #fff; }
+.mesaj-bubble.custom-color-1 { background-color: #ffc107; color: #fff; }
+.mesaj-bubble.custom-color-2 { background-color: #28a745; color: #fff; }
+.mesaj-bubble.custom-color-3 { background-color: #17a2b8; color: #fff; }
+.mesaj-bubble.custom-color-4 { background-color: #007bff; color: #fff; }
+.mesaj-bubble.custom-color-5 { background-color: #6610f2; color: #fff; }
+.mesaj-bubble.custom-color-6 { background-color: #fd7e14; color: #fff; }
+.mesaj-bubble.custom-color-7 { background-color: #6f42c1; color: #fff; }
+.mesaj-bubble.custom-color-8 { background-color: #e83e8c; color: #fff; }
+.mesaj-bubble.custom-color-9 { background-color: #20c997; color: #fff; }
+
+
