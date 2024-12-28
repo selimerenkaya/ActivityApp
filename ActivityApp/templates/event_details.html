@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActivityBox - {{ etkinlik.get_etkinlik_adi() }}</title>
+    <link href="{{ url_for('static', filename='css/event_details.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="event-body">
+    <!-- Navbar -->
+    {% include 'navbar_user.html' %}
+    <!-- End Navbar -->
+    <section class="event-details-page">
+        <!-- Etkinlik Bilgisi Kısmı -->
+        <div class="container mt-4">
+            <div class="etkinlik-photo-container">
+                <img class="etkinlik-photo" src="{{ url_for('etkinlik_photo', etkinlik_id=etkinlik.get_ID()) }}"
+                    alt="Etkinlik Fotoğrafı">
+                <div class="etkinlik-info">
+                    <h1 class="etkinlik-baslik">{{ etkinlik.get_etkinlik_adi() }}</h1>
+                    <p class="etkinlik-zaman">{{ etkinlik.get_tarih().replace("-", "/") }} - {{ etkinlik.get_saat() }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h4>Etkinlik Detayları</h4>
+                <p>{{ etkinlik.get_aciklama() }}</p>
+                <hr>
+                <h5>Etkinlik Bilgileri</h5>
+                <ul>
+                    <li><strong>Sahibi:</strong> {{ olusturan_kullanici.get_ad() }} {{ olusturan_kullanici.get_soyad()
+                        }}
+                        @{{ olusturan_kullanici.get_kullanici_adi() }} </li>
+                    <li><strong>Konum:</strong> {{ etkinlik.get_konum() }}</li>
+                    <li><strong>Katılımcı Sayısı:</strong> {{ katilimcilar | length + 1 }}</li>
+                    <li><strong>Etkinlik Süresi:</strong> {{ etkinlik.get_etkinlik_suresi() }} Saat</li>
+                </ul>
+
+                {% if not kullanici.get_ID() == olusturan_kullanici.get_ID() %}
+                <!-- Etkinliğe Katıl Butonu -->
+                <button id="katilButonu" data-etkinlik-id="{{etkinlik.get_ID()}}"
+                    data-kullanici-id="{{kullanici.get_ID()}}" class="btn btn-primary" {% if not
+                    Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %} disabled {% elif zaten_kayitli %} {% endif %}>
+                    {% if not Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+                    Etkinlik Onaylanmadı
+                    {% elif zaten_kayitli %}
+                    Etkinlikten Ayrıl
+                    {% else %}
+                    Etkinliğe Katıl
+                    {% endif %}
+                </button>
+                {% endif %}
+
+                {% if kullanici.get_ID() == olusturan_kullanici.get_ID() %}
+                <!-- Etkinlik oluşturan kişi için buton görünür -->
+                <a href="{{ url_for('update_event', etkinlik_id=etkinlik.get_ID()) }}" class="btn btn-primary">Etkinlik
+                    Bilgisini Güncelle</a>
+                {% endif %}
+                {% if kullanici.get_ID() == olusturan_kullanici.get_ID() %}
+                <!-- Etkinlik oluşturan kişi için buton görünür -->
+                <form action="{{ url_for('delete_event', etkinlik_id=etkinlik.get_ID()) }}" method="POST">
+                    <button type="submit" class="btn btn-danger mt-2">Etkinliği Sil</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Harita kısmı -->
+        <div class="container mt-4">
+            <h4 class="katilimci-baslik">Konum</h4>
+            <hr>
+            <br>
+            {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+            {% include "etkinlik_map.html" %}
+            {% else %}
+            <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+            {% endif %}
+        </div>
+
+        <!-- Katılımcılar kısmı -->
+        <div class="container mt-4">
+            <h4 class="katilimci-baslik">Katılımcılar</h4>
+            <hr>
+            <br>
+            {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+            <div class="etkinlik-katilimcilar-container">
+                <p class="katilimci">
+                    <span class="katilimci-isim">
+                        {{olusturan_kullanici.get_ad()}} {{olusturan_kullanici.get_soyad()}}</span>
+                    <span class="katilimci-kullanici-ad">@{{olusturan_kullanici.get_kullanici_adi()}}</span>
+                </p>
+                {% for katilimci in katilimcilar %}
+                <p class="katilimci">
+                    <span class="katilimci-isim">
+                        {{ katilimci.get_ad()}}
+                        {{ katilimci.get_soyad()}}</span>
+                    <span class="katilimci-kullanici-ad">@{{ katilimci.get_kullanici_adi() }}</span>
+                </p>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+            {% endif %}
+        </div>
+
+        <div class="container mt-4">
+            <div class="etkinlik-mesajlar-container">
+                <h4>Etkinlik Mesajları</h4>
+                {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+                <!-- Mesajların gösterildiği alan -->
+                <div class="mesaj-liste">
+                    {% for mesaj in etkinlik_mesajlar %}
+                    <div class="mesaj">
+                        {% if Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] == session['username'] %}
+
+                        <div class="mesaj-baslik gonderen">
+                            <span class="gonderen-adi">
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[6]}}
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[7]}}
+                                @{{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] }}</span>
+                        </div>
+                        <div class="mesaj-bubble gonderen">
+                            {{ mesaj.get_mesaj_metni() }}
+                            <div class="mesaj-tarih gonderen">
+                                {{ mesaj.get_gonderim_zamani().replace("-", "/")[:-3]}}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="mesaj-baslik">
+                            <span class="gonderen-adi">
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[6]}}
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[7]}}
+                                @{{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] }}</span>
+                        </div>
+                        <div class="mesaj-bubble alan">
+                            {{ mesaj.get_mesaj_metni() }}
+                            <div class="mesaj-tarih">
+                                {{ mesaj.get_gonderim_zamani().replace("-", "/")[:-3]}}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Mesaj gönderim alanı -->
+                <div class="mesaj-gonderim">
+                    <input type="text" class="mesaj-input" placeholder="Mesajınızı yazın...">
+                    <button class="mesaj-gonder-btn">
+                        <i class="bi bi-chat-dots">Gönder</i>
+                    </button>
+                </div>
+                {% else %}
+                <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <footer class="text-center mt-5">
+            © 2024 Etkinlikler Platformu. Tüm hakları saklıdır.
+        </footer>
+    </section>
+
+    <script>
+        // Kullanıcı adına göre bir hash fonksiyonu
+        function getColorClassFromUsername(username) {
+            const hash = [...username].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            return `custom-color-${hash % 10}`; // 10 farklı renk seçeneği
+        }
+
+        // Var olan Katılımcılar için renkleri uygulama
+        document.querySelectorAll('.katilimci').forEach(katilimci => {
+            const katilimciAd = katilimci.querySelector('.katilimci-isim').textContent.trim();
+            katilimci.classList.add(getColorClassFromUsername(katilimciAd));
+        });
+
+        // Var olan mesajlar için renkleri uygulama
+        document.querySelectorAll('.mesaj').forEach(mesaj => {
+            const gonderenAd = mesaj.querySelector('.gonderen-adi').textContent.trim();
+            const mesajBubble = mesaj.querySelector('.mesaj-bubble');
+
+            // Eğer mesaj-bubble gonderen sınıfını içermiyorsa
+            if (!mesajBubble.classList.contains('gonderen')) {
+                mesajBubble.classList.add(getColorClassFromUsername(gonderenAd));
+            }
+        });
+
+        document.querySelector('.mesaj-gonder-btn').addEventListener('click', function () {
+            const mesajInput = document.querySelector('.mesaj-input');
+            const mesajText = mesajInput.value.trim();
+
+            if (mesajText === "") {
+                alert("Boş bir mesaj gönderemezsiniz!");
+                return;
+            }
+
+            // Yeni mesaj gönder
+            fetch('/gonder_mesaj', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    etkinlik_id: "{{ etkinlik.get_ID() }}",
+                    gonderen_ad: "{{ Database.searchKullanici_ByUsername(session['username'])[6]}} {{ Database.searchKullanici_ByUsername(session['username'])[7]}}    @{{session['username']}}", // Backend'den dinamik alabilirsiniz
+                    icerik: mesajText,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === 'success') {
+                        const mesajListe = document.querySelector('.mesaj-liste');
+
+                        // Yeni mesajı ekle
+                        const yeniMesaj = document.createElement('div');
+                        yeniMesaj.classList.add('mesaj');
+
+                        const mesajBaslik = document.createElement('div');
+                        mesajBaslik.classList.add('mesaj-baslik', 'gonderen');
+                        mesajBaslik.textContent = data.gonderen_ad;
+
+                        const mesajBubble = document.createElement('div');
+                        mesajBubble.classList.add('mesaj-bubble', 'gonderen');
+                        mesajBubble.textContent = data.icerik;
+
+                        const mesajTarih = document.createElement('div');
+                        mesajTarih.classList.add('mesaj-tarih', 'gonderen');
+                        mesajTarih.textContent = new Date().toLocaleString().replace(/\./g, '/').slice(0, -3);
+
+                        mesajListe.appendChild(yeniMesaj);
+                        mesajInput.value = '';
+
+                        yeniMesaj.appendChild(mesajBaslik);
+                        yeniMesaj.appendChild(mesajBubble);
+                        mesajBubble.appendChild(mesajTarih);
+                    }
+                });
+        });
+    </script>
+    <script>
+        document.getElementById('katilButonu').addEventListener('click', function () {
+            const katilButonu = this; // 'this' bağlamını sakla
+
+            // Eğer buton 'Etkinliğe Katıl' yazıyorsa
+            if (katilButonu.innerText === 'Etkinliğe Katıl') {
+                // Etkinlik ve kullanıcı bilgilerini HTML'deki data attribute'larından al
+                const etkinlikID = katilButonu.getAttribute('data-etkinlik-id');
+                const kullaniciID = katilButonu.getAttribute('data-kullanici-id');
+
+                // Backend'e katılım bilgisi gönder
+                fetch('/katilim_ekle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        etkinlik_id: etkinlikID,
+                        kullanici_id: kullaniciID
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.error || 'Sunucudan geçerli bir yanıt alınamadı.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Etkinliğe başarıyla katıldınız!');
+                            // Butonun metnini ve durumunu güncelle
+                            katilButonu.innerText = 'Etkinlikten Ayrıl';
+                        } else {
+                            alert(data.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error.message);
+                        alert(`Hata: ${error.message}`);
+                    });
+            };
+            if (katilButonu.innerText === 'Etkinlikten Ayrıl') {
+                // Etkinlik ve kullanıcı bilgilerini HTML'deki data attribute'larından al
+                const etkinlikID = katilButonu.getAttribute('data-etkinlik-id');
+                const kullaniciID = katilButonu.getAttribute('data-kullanici-id');
+
+                // Backend'e katılım bilgisi gönder
+                fetch('/katilim_sil', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        etkinlik_id: etkinlikID,
+                        kullanici_id: kullaniciID
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(errData => {
+                                throw new Error(errData.error || 'Sunucudan geçerli bir yanıt alınamadı.');
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('Başarıyla ayrıldınız!');
+                            // Butonun metnini ve durumunu güncelle
+                            katilButonu.innerText = 'Etkinliğe Katıl';
+                        } else {
+                            alert(data.error || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error.message);
+                        alert(`Hata: ${error.message}`);
+                    });
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>

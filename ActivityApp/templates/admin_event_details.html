@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActivityBox - {{ etkinlik.get_etkinlik_adi() }}</title>
+    <link href="{{ url_for('static', filename='css/event_details.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="event-body">
+    <!-- Navbar -->
+    {% include 'navbar_admin.html' %}
+    <!-- End Navbar -->
+    <section class="event-details-page">
+        <!-- Etkinlik Bilgisi Kısmı -->
+        <div class="container mt-4">
+            <div class="etkinlik-photo-container">
+                <img class="etkinlik-photo" src="{{ url_for('etkinlik_photo', etkinlik_id=etkinlik.get_ID()) }}"
+                    alt="Etkinlik Fotoğrafı">
+                <div class="etkinlik-info">
+                    <h1 class="etkinlik-baslik">{{ etkinlik.get_etkinlik_adi() }}</h1>
+                    <p class="etkinlik-zaman">{{ etkinlik.get_tarih().replace("-", "/") }} - {{ etkinlik.get_saat() }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h4>Etkinlik Detayları</h4>
+                <p>{{ etkinlik.get_aciklama() }}</p>
+                <hr>
+                <h5>Etkinlik Bilgileri</h5>
+                <ul>
+                    <li><strong>Sahibi:</strong> {{ olusturan_kullanici.get_ad() }} {{ olusturan_kullanici.get_soyad()
+                        }}
+                        @{{ olusturan_kullanici.get_kullanici_adi() }} </li>
+                    <li><strong>Konum:</strong> {{ etkinlik.get_konum() }}</li>
+                    <li><strong>Katılımcı Sayısı:</strong> {{ katilimcilar | length + 1 }}</li>
+                    <li><strong>Etkinlik Süresi:</strong> {{ etkinlik.get_etkinlik_suresi() }} Saat</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Harita kısmı -->
+        <div class="container mt-4">
+            <h4 class="katilimci-baslik">Konum</h4>
+            <hr>
+            <br>
+            {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+            {% include "etkinlik_map.html" %}
+            {% else %}
+            <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+            {% endif %}
+        </div>
+
+        <!-- Katılımcılar kısmı -->
+        <div class="container mt-4">
+            <h4 class="katilimci-baslik">Katılımcılar</h4>
+            <hr>
+            <br>
+            {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+            <div class="etkinlik-katilimcilar-container">
+                <p class="katilimci">
+                    <span class="katilimci-isim">
+                        {{olusturan_kullanici.get_ad()}} {{olusturan_kullanici.get_soyad()}}</span>
+                    <span class="katilimci-kullanici-ad">@{{olusturan_kullanici.get_kullanici_adi()}}</span>
+                </p>
+                {% for katilimci in katilimcilar %}
+                <p class="katilimci">
+                    <span class="katilimci-isim">
+                        {{ katilimci.get_ad()}}
+                        {{ katilimci.get_soyad()}}</span>
+                    <span class="katilimci-kullanici-ad">@{{ katilimci.get_kullanici_adi() }}</span>
+                </p>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+            {% endif %}
+        </div>
+
+        <div class="container mt-4">
+            <div class="etkinlik-mesajlar-container">
+                <h4>Etkinlik Mesajları</h4>
+                {% if Database.getEtkinlikOnayDurumu(etkinlik.get_ID()) %}
+                <!-- Mesajların gösterildiği alan -->
+                <div class="mesaj-liste">
+                    {% for mesaj in etkinlik_mesajlar %}
+                    <div class="mesaj">
+                        {% if Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] == session['username'] %}
+
+                        <div class="mesaj-baslik gonderen">
+                            <span class="gonderen-adi">
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[6]}}
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[7]}}
+                                @{{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] }}</span>
+                        </div>
+                        <div class="mesaj-bubble gonderen">
+                            {{ mesaj.get_mesaj_metni() }}
+                            <div class="mesaj-tarih gonderen">
+                                {{ mesaj.get_gonderim_zamani().replace("-", "/")[:-3]}}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="mesaj-baslik">
+                            <span class="gonderen-adi">
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[6]}}
+                                {{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[7]}}
+                                @{{ Database.searchKullanici_ByID(mesaj.get_gonderici_id())[1] }}</span>
+                        </div>
+                        <div class="mesaj-bubble alan">
+                            {{ mesaj.get_mesaj_metni() }}
+                            <div class="mesaj-tarih">
+                                {{ mesaj.get_gonderim_zamani().replace("-", "/")[:-3]}}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="etkinlik-onay-durum">Etkinlik Henüz onaylanmadı.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <footer class="text-center mt-5">
+            © 2024 Etkinlikler Platformu. Tüm hakları saklıdır.
+        </footer>
+    </section>
+</body>
+
+</html>

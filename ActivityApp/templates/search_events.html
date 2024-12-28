@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arama Sonuçları</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/events.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    {% include 'navbar_user.html' %}
+
+    <h2 class="modern-header">Arama Sonuçları</h2>
+    <section class="etkinlikSection mt-5">
+        {% if etkinlikler %}
+            {% for etkinlik in etkinlikler %}
+            <div class="col-md-12 etkinlik-card-container">
+                <div class="etkinlik-photo-container">
+                    <img class="etkinlik-photo" src="{{ url_for('etkinlik_photo', etkinlik_id=etkinlik.get_ID()) }}" alt="Etkinlik Fotoğrafı">
+                    <div class="etkinlik-blur-overlay"></div>
+                    <div class="etkinlik-info">
+                        <h3><span>{{ etkinlik.get_etkinlik_adi() }}</span></h3>
+                        <h5><span>{{ etkinlik.get_aciklama() }}</span></h5>
+                    </div>
+                </div>
+                <div class="etkinlik-details">
+                    <p><strong>Oluşturan:</strong> 
+                        {{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[6] }}
+                        {{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[7] }}
+                        @{{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[1] }}
+                    </p>
+                    <p><strong>Kategori:</strong> {{ etkinlik.get_kategori() }}</p>
+                    <p><strong>Tarih ve Saat:</strong> {{ etkinlik.get_tarih().replace('-', '/') }} {{ etkinlik.get_saat() }}</p>
+                    <p><strong>Etkinlik Süresi:</strong> {{ etkinlik.get_etkinlik_suresi() }} Saat</p>
+                    <p><strong>Konum:</strong> {{ etkinlik.get_konum() }}</p>
+                    <p><strong>Katılımcı Sayısı:</strong> 
+                        {{ Database.getAllKatilimci_ByEtkinlikID(etkinlik.get_ID())|length + 1 }}
+                    </p>
+                    <a href="{{ url_for('event_details', etkinlik_id=etkinlik.get_ID()) }}" class="btn btn-primary etkinlik-button">
+                        Etkinlik Detayları
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="no-events-message text-center">
+            <h3>Aradığınız kritere uygun etkinlik bulunamadı.</h3>
+        </div>
+        {% endif %}
+    </section>
+
+    <footer class="text-center mt-5">
+        © 2024 Etkinlikler Platformu. Tüm hakları saklıdır.
+    </footer>
+</body>
+
+</html>

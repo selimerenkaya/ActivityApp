@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etkinlikler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- navbar section -->
+    {% include 'navbar_home.html' %}
+    <!-- end navbar section -->
+    <!-- Navbar'ın sonlandığı yer -->
+    <section class="welcome-section">
+        <div class="container text-center py-5">
+            <h1 class="mb-4">Etkinliklerin Yeni Adresine Hoş Geldiniz!</h1>
+            <p class="lead text-muted mb-4">
+                Dünyanın dört bir yanından etkinliklere katılmak, yeni arkadaşlar edinmek ve unutulmaz deneyimlere adım
+                atmak için doğru yerdesiniz.
+                Hayatınızı renklendirmek, yeni şeyler keşfetmek ve topluluğunuzun bir parçası olmak artık çok kolay!
+            </p>
+            <div class="row mt-5">
+                <div class="col">
+                    <img src="/static/images/ilgiAlani/E-Spor/3.jpg" alt="Keşfet" class="img-fluid"
+                        style="width: 70%;">
+                    <h4>Keşfet</h4>
+                    <p class="text-muted">
+                        İlgi alanlarınıza uygun etkinlikler bulun.
+                        Konserlerden atölyelere, spor etkinliklerinden sosyal buluşmalara kadar geniş bir yelpaze sizi
+                        bekliyor.
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col">
+                    <img src="/static/images/ilgiAlani/Astronomi/3.jpg" alt="Bağlan" class="img-fluid"
+                        style="width: 70%;">
+                    <h4>Bağlan</h4>
+                    <p class="text-muted">
+                        Yeni insanlarla tanışın, fikirlerinizi paylaşın ve ilham alın. Topluluğunuzla güçlü bağlar
+                        kurarak anılar biriktirin.
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col">
+                    <img src="/static/images/ilgiAlani/Müzik/3.jpg" alt="Oluştur" class="img-fluid"
+                        style="width: 70%;">
+                    <h4>Oluştur</h4>
+                    <p class="text-muted">
+                        Kendi etkinliklerinizi düzenleyin, katılımcılarınızı davet edin ve topluluğunuzu büyütmeye
+                        başlayın.
+                        Hayal gücünüz sınır tanımıyor!
+                    </p>
+                </div>
+            </div>
+            <a href="{{url_for('login')}}" class="btn btn-primary btn-lg mt-4">Keşfetmeye Başla</a>
+        </div>
+    </section>
+
+
+
+    <footer>
+        © 2024 Etkinlikler Platformu. Tüm hakları saklıdır.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

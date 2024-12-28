@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Etkinlik Haritası</title>
+    <style>
+        /* Haritaya ait css */
+        .map-container {
+            height: auto !important;
+            /* Harita yüksekliğini ayarlayın */
+        }
+
+        .map-ayarlar {
+            padding: 10px 0px;
+        }
+
+        .map-girdiler {
+            padding: 5px 0px;
+        }
+
+        .map-secenekler {
+            padding: 5px 0px;
+        }
+
+        .map-secenek {
+            border: 1px solid #148dfe;
+            border-radius: 4px;
+        }
+
+        .map-girdi {
+            border: 1px solid #148dfe;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .map-bolum {
+            height: 420px;
+        }
+
+        #map {
+            margin-top: 10px;
+            height: 100%;
+            max-height: 100%;
+        }
+
+        .route-info {
+            margin-top: 10px;
+        }
+
+        .road-info {
+            margin-left: 20px;
+            display: none;
+        }
+
+        .road-info.active {
+            display: block;
+        }
+
+        .route-color {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+        }
+
+        .route-label {
+            display: inline-block;
+            font-size: 14px;
+            margin-left: 5px;
+        }
+
+        /* Buton Stili */
+        .route-button {
+            background-color: #007bff;
+            /* Butonun rengi */
+            color: white;
+            /* Yazı rengi */
+            border: none;
+            /* Kenarlık yok */
+            padding: 10px 20px;
+            /* Butonun iç boşlukları */
+            border-radius: 5px;
+            /* Köşe yuvarlama */
+            font-size: 14px;
+            /* Yazı boyutu */
+            cursor: pointer;
+            /* Fareyi üzerine getirdiğinde tıklanabilir hale gelir */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            /* Animasyon efektleri */
+            display: inline-block;
+            /* Butonun satır içinde görünmesini sağlar */
+            margin-top: 10px;
+            /* Üstten biraz boşluk */
+        }
+
+        /* Hover (fare ile üzerine gelince) Efekti */
+        .route-button:hover {
+            background-color: #0056b3;
+            /* Renk koyulaşır */
+            transform: scale(1.05);
+            /* Biraz büyür */
+        }
+
+        /* Buton tıklanırken */
+        .route-button:active {
+            transform: scale(0.98);
+            /* Biraz küçülür */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Harita Kısmı / Başka yerlere direkt eklenebilir *!!!* veri olarak etkinlik_konum döndürülmeli her zaman-->
+    <div class="map-container">
+        <div class="map-ayarlar">
+            <div class="map-secenekler">
+                <b>Ulaşım Türü: </b>
+                <select id="mode" class="map-secenek">
+                    <option value="DRIVING">Araba</option>
+                    <option value="WALKING">Yürüme</option>
+                    <option value="TRANSIT">Otobüs</option>
+                </select>
+            </div>
+            <div class="map-girdiler">
+                <input id="start" type="text" class="map-girdi" placeholder="Konumunuzu girin" value="{{kullanici_konum}}">
+                <input id="end" type="text" class="map-girdi" placeholder="Etkinlik konumunu girin"
+                    value="{{ etkinlik_konum }}" readonly>
+            </div>
+        </div>
+        <div id="route-info" class="route-info"></div>
+        <div class="map-bolum">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Haritaya ait javascript kodu-->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDaZl18l0BX8viIEr7A3dKUK03aXuJ-fwE&libraries=places"></script>
+    <script>
+        function initMap() {
+            const directionsService = new google.maps.DirectionsService();
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 7,
+                center: { lat: 41.0082, lng: 28.9784 }, // İstanbul
+            });
+
+            // Alternatif rotalar için birden fazla renderer
+            const renderers = [];
+            const createRenderer = (color) => {
+                return new google.maps.DirectionsRenderer({
+                    map: map,
+                    suppressMarkers: true, // Varsayılan markerları gizle
+                    polylineOptions: {
+                        strokeColor: color,
+                        strokeOpacity: 0.7,
+                        strokeWeight: 5,
+                    },
+                });
+            };
+
+            // Renkler sadeleştirildi
+            const routeColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1"];
+            routeColors.forEach((color) => {
+                renderers.push(createRenderer(color));
+            });
+
+            // Başlangıç için sürüklenebilir bir marker
+            let startMarker = new google.maps.Marker({
+                position: { lat: 41.0082, lng: 28.9784 }, // Başlangıç noktası
+                map: map,
+                label: {
+                    color: "#000000",
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    text: "Konumunuz",
+                    textShadow: "4px 4px 8px rgba(0, 0, 0, 0.8)", // Daha güçlü ve belirgin gölge
+                },
+                draggable: true,
+            });
+
+            // Bitiş için sabit bir marker
+            let endMarker = new google.maps.Marker({
+                position: { lat: 41.0082, lng: 29.0 }, // Varsayılan bitiş noktası
+                map: map,
+                label: {
+                    color: "#000000",
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    text: "Etkinlik Noktası",
+                    textShadow: "4px 4px 8px rgba(0, 0, 0, 0.8)", // Daha güçlü ve belirgin gölge
+                },
+                draggable: false,
+            });
+
+            // Konum değiştiğinde harita üzerinde güncelleme yapacak fonksiyon
+            const onChangeHandler = function () {
+                const startLocationInput = document.getElementById("start").value;
+                const endLocationInput = document.getElementById("end").value;
+
+                if (startLocationInput) {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: startLocationInput }, (results, status) => {
+                        if (status === "OK" && results[0]) {
+                            const startPosition = results[0].geometry.location;
+                            startMarker.setPosition(startPosition); // Başlangıç marker'ını güncelle
+                            calculateAndDisplayRoute(directionsService, renderers, startMarker, endLocationInput);
+                        } else {
+                            console.error("Geocode failed:", status);
+                            window.alert("Başlangıç noktası bulunamadı: " + status);
+                        }
+                    });
+                }
+
+                if (endLocationInput) {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: endLocationInput }, (results, status) => {
+                        if (status === "OK" && results[0]) {
+                            const endPosition = results[0].geometry.location;
+                            endMarker.setPosition(endPosition); // Bitiş marker'ını güncelle
+                            calculateAndDisplayRoute(directionsService, renderers, startMarker, endPosition);
+                        } else {
+                            console.error("Geocode failed:", status);
+                            window.alert("Bitiş noktası bulunamadı: " + status);
+                        }
+                    });
+                }
+            };
+
+            // Marker sürüklendiğinde rota güncellenir
+            startMarker.addListener("dragend", () => {
+                const endPosition = endMarker.getPosition();
+                calculateAndDisplayRoute(directionsService, renderers, startMarker, endPosition);
+
+                // Marker sürüklendiğinde başlangıç konumunu input kutusuna yazalım
+                const startPosition = startMarker.getPosition();
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: startPosition }, (results, status) => {
+                    if (status === "OK" && results[0]) {
+                        document.getElementById("start").value = results[0].formatted_address;
+                    } else {
+                        console.error("Geocode failed:", status);
+                    }
+                });
+            });
+
+            // Mode ve start inputlarının değişimine yanıt ver
+            document.getElementById("mode").addEventListener("change", onChangeHandler);
+            document.getElementById("start").addEventListener("change", onChangeHandler);
+            document.getElementById("end").addEventListener("change", onChangeHandler);
+            onChangeHandler(); // İlk başta rota hesaplama
+        }
+
+        function calculateAndDisplayRoute(directionsService, renderers, startMarker, endPosition) {
+            let selectedMode = document.getElementById("mode").value;
+            const validTravelModes = ["DRIVING", "WALKING", "TRANSIT"];
+
+            // TravelMode kontrolü
+            if (!validTravelModes.includes(selectedMode)) {
+                console.error(`Geçersiz travelMode: ${selectedMode}. Varsayılan olarak DRIVING atanıyor.`);
+                selectedMode = "DRIVING";
+            }
+
+            const startLocation = startMarker.getPosition(); // Başlangıç marker'ının pozisyonu
+
+            directionsService.route(
+                {
+                    origin: startLocation,
+                    destination: endPosition,
+                    travelMode: google.maps.TravelMode[selectedMode],
+                    provideRouteAlternatives: true, // Alternatif rotalar etkinleştiriliyor
+                },
+                (response, status) => {
+                    if (status === "OK") {
+                        // Rotaların bilgilerini göster
+                        const routeInfoContainer = document.getElementById("route-info");
+                        routeInfoContainer.innerHTML = ""; // Eski bilgileri temizle
+                        response.routes.forEach((route, index) => {
+                            const routeDuration = route.legs[0].duration.text;
+                            const routeDistance = route.legs[0].distance.text;
+
+                            // Rota bilgilerini yazdırırken kullanılan yol bilgisi de ekleniyor
+                            let usedRoads = '';
+                            route.legs[0].steps.forEach((step) => {
+                                if (step.instructions) {
+                                    usedRoads += step.instructions + '<br>';
+                                }
+                            });
+
+                            // Bilgileri liste halinde ekle
+                            const routeDiv = document.createElement("div");
+                            routeDiv.innerHTML = `
+                                <b>Rota ${index + 1}</b>
+                                <div class="route-color" style="display: inline-flex; align-items: center; margin-left: 10px; border-radius: 5px; background-color: ${renderers[index].polylineOptions.strokeColor}; width: 20px; height: 20px; vertical-align: sub;"></div>
+                                <br>
+                                Mesafe: ${routeDistance}<br>
+                                Süre: ${routeDuration}<br>
+
+                                <!-- Güncellenmiş buton -->
+                                <button class="route-button" onclick="toggleRoadInfo(${index})">Yol Bilgisini Göster</button>
+
+                                <div class="road-info" id="road-info-${index}">
+                                    <b>Kullanılan Yollar:</b><br>${usedRoads}
+                                </div>
+                            `;
+                            routeInfoContainer.appendChild(routeDiv);
+
+                            // Alternatif rotaları render et
+                            const singleRouteResponse = {
+                                ...response,
+                                routes: [route],
+                            };
+                            renderers[index].setDirections(singleRouteResponse); // Rota renderer'larını kullanarak haritada göster
+                        });
+                    } else {
+                        console.error("Directions request failed:", status);
+                        window.alert("Yol hesaplama başarısız. Durum: " + status);
+                    }
+                }
+            );
+        }
+
+        // Kullanıcı butonla yol bilgisini gösterip gizleyebilir
+        function toggleRoadInfo(routeIndex) {
+            const roadInfoElement = document.getElementById(`road-info-${routeIndex}`);
+            roadInfoElement.classList.toggle('active');
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+
+</html>

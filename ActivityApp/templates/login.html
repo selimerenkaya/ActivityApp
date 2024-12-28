@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Giriş ve Kayıt Ol</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+	<link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<!-- navbar section -->
+	{% include 'navbar_home.html' %}
+	<!-- end navbar section -->
+
+	<div class="container">
+		<!-- Giriş Yap -->
+		<div id="login-container" class="form-container">
+			<h1 class="text-center">Giriş Yap</h1>
+			<div id="login-feedback" class="feedback"></div>
+			<form id="login-form">
+				<div class="mb-3">
+					<label for="username-login" class="form-label">Kullanıcı Adı:</label>
+					<input type="text" id="username-login" name="username_login" class="form-control" required>
+				</div>
+				<div class="mb-3">
+					<label for="password-login" class="form-label">Şifre:</label>
+					<input type="password" id="password-login" name="password_login" class="form-control" required>
+				</div>
+				<button id="loginButton" type="submit" name="action" value="login" class="btn btn-primary w-100">Giriş
+					Yap
+				</button>
+			</form>
+			<p class="text-center mt-3">
+				Hesabınız yok mu? <a href="#" id="show-register">Kayıt Ol</a>
+			</p>
+			<p class="text-center mt-3">
+				Şifrenizi mi unuttunuz? <a href="#" id="show-password">Şifremi Unuttum</a>
+			</p>
+		</div>
+
+		<!-- Kayıt ol -->
+		<div id="register-container" class="form-container2 d-none">
+			<h1 class="text-center">Kayıt Ol</h1>
+			<div id="register-feedback" class="feedback"></div>
+			<form id="register-form" class="row">
+				<div class="col">
+					<div class="mb-3">
+						<label for="username-register" class="form-label">Kullanıcı Adı</label>
+						<input type="text" id="username-register" name="username_register" class="form-control"
+							required>
+					</div>
+
+					<div class="mb-3">
+						<label for="password-register" class="form-label">Şifre</label>
+						<input type="password" id="password-register" name="password_register" class="form-control"
+							required>
+					</div>
+
+					<div class="mb-3">
+						<label for="email-register" class="form-label">Eposta</label>
+						<input type="email" id="email-register" name="email_register" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="location-register" class="form-label">Konum</label>
+						<select id="location-register" name="location_register" class="form-control" required>
+							{% for konum in hazir_konumlar %}
+							<option value="{{ konum }}">{{
+								konum }}</option>
+							{% endfor %}
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label for="interest-register" class="form-label">İlgi Alanları</label>
+						<div id="interest-options" class="form-control"
+							style="height: auto; overflow-y: auto; max-height: 125px;">
+							{% for interest in ilgi_alanlar %}
+							<div class="custom-checkbox">
+								<input type="checkbox" name="interests" value="{{ interest }}"
+									id="interest-{{ loop.index }}">
+								<label for="interest-{{ loop.index }}">{{ interest }}</label>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col">
+					<div class="mb-3">
+						<label for="name-register" class="form-label">Ad</label>
+						<input type="text" id="name-register" name="name_register" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="surname-register" class="form-label">Soyad</label>
+						<input type="text" id="surname-register" name="surname_register" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="birthday-register" class="form-label">Doğum Tarihi</label>
+						<input type="date" id="birthday-register" name="birthday_register" class="form-control"
+							required>
+					</div>
+
+					<div class="mb-3">
+						<label for="gender-register" class="form-label">Cinsiyet</label>
+						<select id="gender-register" name="gender_register" class="form-control" required>
+							<option value="">Seçiniz...</option>
+							<option value="Erkek">Erkek</option>
+							<option value="Kadın">Kadın</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label for="telephone-register" class="form-label">Telefon Numarası</label>
+						<input type="text" id="telephone-register" name="telephone_register" class="form-control"
+							required pattern="\d*" maxlength="11" placeholder="Telefon numaranızı giriniz">
+					</div>
+
+					<div class="mb-3">
+						<label for="profil_fotografi-register" class="form-label">Profil Fotoğrafı</label>
+						<input type="file" class="form-control" id="profil_fotografi-register"
+							name="profil_fotografi-register" accept=".jpg, image/jpeg">
+					</div>
+
+				</div>
+				<div class="col-12 mt-5">
+					<button type="submit" id="registerButton" name="action" value="register"
+						class="btn btn-success w-100">
+						Kayıt Ol
+					</button>
+				</div>
+			</form>
+
+			<p class="text-center mt-2">
+				Zaten hesabınız var mı? <a href="#" id="show-login">Giriş Yap</a>
+			</p>
+		</div>
+
+		<!-- Şifremi Unuttum -->
+		<div id="password-container" class="form-container2 d-none">
+			<h1 class="text-center">Şifremi Unuttum</h1>
+			<div id="password-feedback" class="feedback"></div>
+			<form id="password-form" class="row">
+				<div class="col">
+					<div class="mb-3">
+						<label for="username-password" class="form-label">Kullanıcı Adı</label>
+						<input type="text" id="username-password" name="username_password" class="form-control"
+							required>
+					</div>
+
+					<div class="mb-3">
+						<label for="email-password" class="form-label">Eposta</label>
+						<input type="email" id="email-password" name="email_password" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="birthday-password" class="form-label">Doğum Tarihi</label>
+						<input type="date" id="birthday-password" name="birthday_password" class="form-control"
+							required>
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="mb-3">
+						<label for="name-password" class="form-label">Ad</label>
+						<input type="text" id="name-password" name="name_password" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="surname-password" class="form-label">Soyad</label>
+						<input type="text" id="surname-password" name="surname_password" class="form-control" required>
+					</div>
+
+					<div class="mb-3">
+						<label for="telephone-password" class="form-label">Telefon Numarası</label>
+						<input type="text" id="telephone-password" name="telephone_password" class="form-control"
+							required pattern="\d*" maxlength="11" placeholder="Telefon numaranızı giriniz">
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label for="password-password" class="form-label">Yeni Şifre</label>
+					<input type="password" id="password-password" name="password_password" class="form-control"
+						required>
+				</div>
+
+				<div class="col-12">
+					<button type="submit" id="passwordButton" name="action" value="password"
+						class="btn btn-danger w-100">
+						Şifremi Değiştir
+					</button>
+				</div>
+			</form>
+
+			<p class="text-center mt-3">
+				Şifreinizi mi hatırladınız? <a href="#" id="show-login2">Giriş Yap</a>
+			</p>
+		</div>
+	</div>
+	<!-- jQuery ve Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Butonlara tıklayınca ajax çağrısı ile yanıt verme-->
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const today = new Date();
+			// Bugünden 16 yıl geriye git
+			const year = today.getFullYear() - 16;
+			const month = String(today.getMonth() + 1).padStart(2, '0'); // Aylar 0'dan başlar
+			const day = String(today.getDate()).padStart(2, '0');
+			const maxDate = `${year}-${month}-${day}`;
+
+			// Doğum tarihi alanının max değerini ayarla
+			document.getElementById('birthday-register').setAttribute('max', maxDate);
+		});
+
+		$(document).ready(function () {
+			// Giriş formu işlemi
+			$('#login-form').submit(function (e) {
+				e.preventDefault();
+				$.ajax({
+					url: '/login', // Backend URL
+					type: 'POST',
+					data: {
+						action: $('#loginButton').val(),
+						username_login: $('#username-login').val(),
+						password_login: $('#password-login').val()
+					},
+					success: function (response) {
+						$('#login-feedback')
+							.removeClass('d-none alert-danger')
+							.addClass('alert alert-success')
+							.html('<strong>Başarılı!</strong> ' + response.message)
+							.show();
+						window.location.href = "/user_anasayfa"; // Manuel yönlendirme
+					},
+					error: function (response) {
+						$('#login-feedback')
+							.removeClass('d-none alert-success')
+							.addClass('alert alert-danger')
+							.html('<p><strong>Hata!</strong> ' + response.responseJSON.error + '</p>')
+							.show();
+						console.error(response.responseJSON.error);
+					}
+				});
+			});
+
+			// Şifremi unuttum formu işlemi
+			$('#password-form').submit(function (e) {
+				e.preventDefault();
+
+				// Geri bildirim mesajını sıfırla
+				$('#password-feedback')
+					.removeClass('alert alert-success alert-danger')
+					.addClass('d-none')
+					.html('');
+
+				$.ajax({
+					url: '/login', // Backend URL
+					type: 'POST',
+					data: {
+						action: $('#passwordButton').val(),
+						username_password: $('#username-password').val(),
+						email_password: $('#email-password').val(),
+						name_password: $('#name-password').val(),
+						surname_password: $('#surname-password').val(),
+						birthday_password: $('#birthday-password').val(),
+						telephone_password: $('#telephone-password').val(),
+						password_password: $('#password-password').val()
+					},
+					success: function (response) {
+						// Başarılı geri bildirim mesajı
+						$('#password-feedback')
+							.removeClass('d-none alert-danger')
+							.addClass('alert alert-success')
+							.html('<strong>Başarılı!</strong> ' + response.message)
+							.show();
+					},
+					error: function (response) {
+						// Hata mesajı formatında geri bildirim
+						$('#password-feedback')
+							.removeClass('d-none alert-success')
+							.addClass('alert alert-danger')
+							.html('<p><strong>Hata!</strong> ' + response.responseJSON.error + '</p>')
+							.show();
+						console.error(response.responseJSON.error);
+					}
+				});
+			});
+
+			// Kayıt formu işlemi
+			$('#register-form').submit(function (e) {
+				e.preventDefault();
+
+				// FormData nesnesi oluştur
+				let formData = new FormData();
+
+				// İlgi alanlarını al ve birleştir
+				let selectedInterests = [];
+				$('#interest-options input[type="checkbox"]:checked').each(function () {
+					selectedInterests.push($(this).val());
+				});
+				let interestString = selectedInterests.join(',');
+
+				// Form verilerini ekle
+				formData.append('action', $('#registerButton').val());
+				formData.append('username_register', $('#username-register').val());
+				formData.append('password_register', $('#password-register').val());
+				formData.append('email_register', $('#email-register').val());
+				formData.append('location_register', $('#location-register').val());
+				formData.append('interest_register', interestString);
+				formData.append('name_register', $('#name-register').val());
+				formData.append('surname_register', $('#surname-register').val());
+				formData.append('birthday_register', $('#birthday-register').val());
+				formData.append('gender_register', $('#gender-register').val());
+				formData.append('telephone_register', $('#telephone-register').val());
+
+				// Dosya ekle
+				let fileInput = $('#profil_fotografi-register')[0].files[0];
+				if (fileInput) {
+					formData.append('profil_fotografi_register', fileInput);
+				}
+
+				// Geri bildirim mesajını sıfırla
+				$('#register-feedback')
+					.removeClass('alert alert-success alert-danger')
+					.addClass('d-none')
+					.html('');
+
+				// AJAX isteği
+				$.ajax({
+					url: '/login', // Backend URL
+					type: 'POST',
+					data: formData,
+					processData: false, // FormData'nın otomatik işlenmesini engeller
+					contentType: false, // FormData için content type belirtmeyin
+					success: function (response) {
+						// Başarılı geri bildirim mesajı
+						$('#register-feedback')
+							.removeClass('d-none alert-danger')
+							.addClass('alert alert-success')
+							.html('<strong>Başarılı!</strong> ' + response.message)
+							.show();
+						window.location.href = "/user_anasayfa"; // Manuel yönlendirme
+					},
+					error: function (response) {
+						// Hata mesajı formatında geri bildirim
+						$('#register-feedback')
+							.removeClass('d-none alert-success')
+							.addClass('alert alert-danger')
+							.html('<p><strong>Hata!</strong> ' + response.responseJSON.error + '</p>')
+							.show();
+						console.error(response.responseJSON.error);
+					}
+				});
+			});
+
+
+			// Kayıt Ol formunu göster
+			$('#show-register').click(function (e) {
+				e.preventDefault();
+				$('#login-container').addClass('d-none');
+				$('#register-container').removeClass('d-none');
+			});
+
+			// Giriş Yap formunu göster
+			$('#show-login').click(function (e) {
+				e.preventDefault();
+				$('#register-container').addClass('d-none');
+				$('#login-container').removeClass('d-none');
+			});
+
+			// Giriş Yap formunu göster
+			$('#show-login2').click(function (e) {
+				e.preventDefault();
+				$('#password-container').addClass('d-none');
+				$('#login-container').removeClass('d-none');
+			});
+
+			// Şifremi unuttum formunu göster
+			$('#show-password').click(function (e) {
+				e.preventDefault();
+				$('#login-container').addClass('d-none');
+				$('#password-container').removeClass('d-none');
+			});
+		});
+	</script>
+</body>
+
+</html>

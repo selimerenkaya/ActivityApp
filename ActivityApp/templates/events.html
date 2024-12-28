@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etkinliklerim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/events.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    {% include 'navbar_user.html' %}
+
+    <h2 class="modern-header">Etkinliklerim</h2>
+    <div class="center-button-container">
+        <a href="{{ url_for('create_event') }}" class="btn btn-primary etkinlik-olustur-button">
+            Yeni Etkinlik Oluştur
+        </a>
+    </div>
+    <section class="filter-section text-center mt-3">
+        <form id="filter-form">
+            <div class="row justify-content-center">
+                <div class="col-md-3">
+                    <label for="filter-type" class="form-label">Filtre Türü:</label>
+                    <select name="filter_type" id="filter-type" class="form-select">
+                        <option value="all" selected>Tüm Etkinlikler</option>
+                        <option value="my_events">Kendi Etkinliklerim</option>
+                        <option value="future_events">Gelecekteki Etkinlikler</option>
+                        <option value="past_events">Geçmiş Etkinlikler</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="sort-type" class="form-label">Sıralama Türü:</label>
+                    <select name="sort_type" id="sort-type" class="form-select">
+                        <option value="date-yakin">Tarihe Göre (Günümüzden Geçmişe)</option>
+                        <option value="date">Tarihe Göre (Geçmişten Günümüze)</option>
+                        <option value="duration">Süreye Göre (Azalan)</option>
+                        <option value="duration-artan">Süreye Göre (Artan)</option>
+                        <option value="participants">Katılımcı Sayısına Göre (Azalan)</option>
+                        <option value="participants-artan">Katılımcı Sayısına Göre (Artan)</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <section class="etkinlikSection mt-5">
+        {% for etkinlik in etkinlikler %}
+        <!-- Etkinlik Fotoğrafı ve Bilgileri -->
+        <div class="col-md-12 etkinlik-card-container">
+            <div class="etkinlik-photo-container">
+                <img class="etkinlik-photo" src="{{ url_for('etkinlik_photo', etkinlik_id=etkinlik.get_ID()) }}"
+                    alt="Etkinlik Fotoğrafı">
+                <div class="etkinlik-blur-overlay"></div> <!-- Blur kısmı -->
+                <div class="etkinlik-info">
+                    <h3><span>{{ etkinlik.get_etkinlik_adi() }}</span></h3>
+                    <h5><span>{{ etkinlik.get_aciklama() }}</span></h5>
+                </div>
+            </div>
+            <div class="etkinlik-details">
+                <p><strong>Oluşturan:</strong>
+                    {{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[6]}}
+                    {{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[7]}}
+                    @{{ Database.searchKullanici_ByID(Database.getOlusturan_ByEtkinlikID(etkinlik.get_ID())[0])[1]}}
+                </p>
+
+                <p><strong>Kategori:</strong> {{ etkinlik.get_kategori() }}</p>
+                <p><strong>Tarih ve Saat:</strong> {{ etkinlik.get_tarih().replace('-', '/')}} {{
+                    etkinlik.get_saat() }}</p>
+                <p><strong>Etkinlik Süresi:</strong> {{ etkinlik.get_etkinlik_suresi() }} Saat</p>
+                <p><strong>Konum:</strong> {{ etkinlik.get_konum() }}</p>
+                <p><strong>Katılımcı Sayısı: </strong> {{Database.getAllKatilimci_ByEtkinlikID(etkinlik.get_ID())|length
+                    + 1}}</p>
+                <a href="{{ url_for('event_details', etkinlik_id=etkinlik.get_ID()) }}"
+                    class="btn btn-primary etkinlik-button">
+                    Etkinlik Detayları
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+    <footer class="text-center mt-5">
+        © 2024 Etkinlikler Platformu. Tüm hakları saklıdır.
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterForm = document.getElementById('filter-form');
+
+            filterForm.addEventListener('change', function () {
+                const filterType = document.getElementById('filter-type').value;
+                const sortType = document.getElementById('sort-type').value;
+
+                fetch('/filter_events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filter_type: filterType,
+                        sort_type: sortType
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const etkinlikContainer = document.querySelector('.etkinlikSection');
+                        etkinlikContainer.innerHTML = ''; // Önce mevcut içerikleri temizle
+
+                        if (data.length === 0) {
+                            // Data boşsa "Etkinlik bulunamadı" mesajı ekle
+                            etkinlikContainer.innerHTML = `
+                                <div class="no-events-message text-center">
+                                    <h3>Etkinlik bulunmamaktadır.</h3>
+                                </div>
+                            `;
+                        } else {
+                            // Etkinlik verileri varsa, her etkinlik için kart oluştur
+                            data.forEach(etkinlik => {
+                                const etkinlikCard = `
+                                <div class="col-md-12 etkinlik-card-container">
+                                    <div class="etkinlik-photo-container">
+                                        <img class="etkinlik-photo" src="${etkinlik.etkinlik_photo}" alt="Etkinlik Fotoğrafı">
+                                        <div class="etkinlik-blur-overlay"></div>
+                                        <div class="etkinlik-info">
+                                            <h3><span>${etkinlik.adi}</span></h3>
+                                            <h5><span>${etkinlik.aciklama}</span></h5>
+                                        </div>
+                                    </div>
+                                    <div class="etkinlik-details">
+                                        <p><strong>Oluşturan:</strong> 
+                                            ${etkinlik.olusturan.isim} 
+                                            ${etkinlik.olusturan.soyisim} 
+                                            @${etkinlik.olusturan.username}
+                                        </p>
+                                        <p><strong>Kategori:</strong> ${etkinlik.kategori}</p>
+                                        <p><strong>Tarih ve Saat:</strong> ${etkinlik.tarih} ${etkinlik.saat}</p>
+                                        <p><strong>Etkinlik Süresi:</strong> ${etkinlik.suresi} Saat</p>
+                                        <p><strong>Konum:</strong> ${etkinlik.konum}</p>
+                                        <p><strong>Katılımcı Sayısı:</strong> ${etkinlik.katilimci_sayisi}</p>
+                                        <a href="${etkinlik.detay_linki}" class="btn btn-primary etkinlik-button">
+                                            Etkinlik Detayları
+                                        </a>
+                                    </div>
+                                </div>`;
+                                etkinlikContainer.insertAdjacentHTML('beforeend', etkinlikCard);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+    </script>
+</body>
+
+</html>

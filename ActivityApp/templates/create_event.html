@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etkinlik Oluştur</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/create_event.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet"/>
+</head>
+
+<body>
+    {% include 'navbar_user.html' %}
+
+    <div class="create-event-container">
+        <h2>Etkinlik Oluştur</h2>
+        <form action="/create_event" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="etkinlikAdi">Etkinlik Adı</label>
+                <input type="text" class="form-control" id="etkinlikAdi" name="etkinlikAdi" required>
+            </div>
+            <div class="form-group">
+                <label for="kategori">Kategori</label>
+                <select class="form-control" id="kategori" name="kategori" required>
+                    <option value="" disabled selected>Bir kategori seçin</option>
+                    {% for kategori in kategoriler %}
+                    <option value="{{kategori}}">{{kategori}}</option>
+                    {%endfor%}
+                </select>
+
+            </div>
+            <div class="form-group">
+                <label for="tarih">Tarih</label>
+                <input type="date" class="form-control" id="tarih" name="tarih" required>
+                <small class="form-text text-muted">Sadece bugünden sonrası için tarih seçebilirsiniz.</small>
+            </div>
+            <div class="form-group">
+                <label for="saat">Saat</label>
+                <input type="time" class="form-control" id="saat" name="saat" required min="10:00" max="23:00">
+                <small class="form-text text-muted">Etkinlik saatleri sabah 10:00 ile akşam 23:00 arasında
+                    olmalıdır.</small>
+            </div>
+            <div class="form-group">
+                <label for="aciklama">Açıklama</label>
+                <textarea class="form-control" id="aciklama" name="aciklama" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="konum">Konum</label>
+                <select id="konum" name="konum" class="form-control" required>
+                    {% for konum in hazir_konumlar %}
+                    <option value="{{ konum }}">{{
+                        konum }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sure">Etkinlik Süresi (Saat)</label>
+                <input type="number" class="form-control" id="sure" name="sure" min="1" max="4" required>
+                <small class="form-text text-muted">Etkinlik süresi 1 ile 4 saat arasında olmalıdır.</small>
+            </div>
+            <div class="form-group">
+                <label for="etkinlikFotografi">Etkinlik Fotoğrafı</label>
+                <input type="file" class="form-control" id="etkinlikFotografi" name="etkinlikFotografi"
+                    accept=".jpg, image/jpeg" required>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Etkinliği Oluştur</button>
+        </form>
+    </div>
+
+    <script>
+        // Yarın ve sonrasını al
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            today.setDate(today.getDate() + 1); // Bir gün ekle
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Aylar 0'dan başlar, bu yüzden +1
+            const day = String(today.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+
+            // Tarih alanının min değerini ayarla
+            document.getElementById('tarih').setAttribute('min', minDate);
+        });
+    </script>
+</body>
+
+</html>

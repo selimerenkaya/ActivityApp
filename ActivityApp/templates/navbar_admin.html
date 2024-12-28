@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Navbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="{{ url_for('static', filename='css/navbar_home.css') }}" rel="stylesheet" />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand" href="admin">
+            <img src="{{ url_for('static', filename='images/abLogo.png') }}" alt="Logo">        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin">Ana Sayfa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="admin_events">Etkinlikler</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="admin_users">Kullanıcılar</a>
+                </li>
+                <!-- Profil Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Profil
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="logout">Çıkış Yap</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+{% if request.path == '/etkinlikler' %}
+<div class="container mt-3">
+    <form action="/etkinlik-ara" method="GET" class="d-flex">
+        <input class="form-control me-2" type="search" name="query" placeholder="Etkinlik Ara" aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Ara</button>
+    </form>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const profileDropdown = document.getElementById('profileDropdown');
+    profileDropdown.addEventListener('click', function () {
+        const isExpanded = profileDropdown.getAttribute('aria-expanded') === 'true';
+        profileDropdown.setAttribute('aria-expanded', !isExpanded);
+    });
+</script>
+
+</body>
+</html>

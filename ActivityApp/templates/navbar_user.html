@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Navbar</title>
+    <link href="{{ url_for('static', filename='css/navbar_user.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('user_anasayfa')}}">
+                <img src="{{ url_for('static', filename='images/abLogo.png') }}" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+            <form class="d-flex ms-lg-3" action="{{ url_for('search_events') }}" method="GET">
+                <input class="form-control me-2 custom-width" style="margin-bottom: 0px;" type="search" name="query"
+                    placeholder="Etkinlik Ara" aria-label="Search">
+                <button class="btn btn-outline-light" type="submit">Ara</button>
+            </form>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_anasayfa')}}">Ana sayfa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('events')}}">Etkinliklerim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('create_event')}}">Etkinlik Oluştur</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle profile-link" href="#" id="profileDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Profil
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('profile')}}">Profili Gör</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('edit_profile')}}">Profili Düzenle</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout')}}">Çıkış Yap</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const profileDropdown = document.getElementById('profileDropdown');
+        profileDropdown.addEventListener('click', function () {
+            const isExpanded = profileDropdown.getAttribute('aria-expanded') === 'true';
+            profileDropdown.setAttribute('aria-expanded', !isExpanded);
+            profileDropdown.classList.toggle('active-dropdown');
+        });
+    </script>
+</body>
+
+</html>

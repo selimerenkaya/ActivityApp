@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Profil</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+	<link
+		href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Roboto:wght@400;500&display=swap"
+		rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+	<!-- Navbar -->
+	{% include 'navbar_user.html' %}
+
+	<!-- Profil Bölümü -->
+	<div class="container mt-5">
+		<section class="profileSection">
+			<div class="row align-items-center">
+				<!-- Profil Fotoğrafı -->
+				<div class="col-md-4 text-center">
+					<img class="profile-photo" src="{{ url_for('profile_photo', user_id=kullanici.get_ID()) }}"
+						alt="Profil Fotoğrafı">
+				</div>
+				<!-- Kullanıcı Bilgileri -->
+				<div class="col-md-8">
+					<h2><span class="text-primary">{{ kullanici.get_ad() }} {{ kullanici.get_soyad() }}</span></h2>
+					<h4><span class="text-secondary">@{{ kullanici.get_kullanici_adi() }}</span></h4>
+					<p><strong>Yaş:</strong> {{ kullanici_yas }}</p>
+					<p><strong>Cinsiyet:</strong> {{ kullanici.get_cinsiyet() }}</p>
+					<p><strong>Konum:</strong> {{ kullanici.get_konum() }}</p>
+					<p><strong>İlgi Alanları:</strong> {{ kullanici.get_ilgi_alanlari().replace(',', ', ') }}</p>
+					<p class="event-score">Etkinlik Puanı: {{ kullanici_puan }}</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="etkinlikSection mt-5">
+			<h2>Geçmiş Etkinliklerim</h2>
+			{% for etkinlik in etkinlikler %}
+			<div class="row align-items-center mt-4 etkinlik-card">
+				<!-- Etkinlik Fotoğrafı ve Bilgileri -->
+				<div class="col-md-12 etkinlik-card-container">
+					<div class="etkinlik-photo-container">
+						<img class="etkinlik-photo" src="{{ url_for('etkinlik_photo', etkinlik_id=etkinlik.get_ID()) }}"
+							alt="Etkinlik Fotoğrafı">
+						<div class="etkinlik-info">
+							<h3><span>
+									{{ etkinlik.get_etkinlik_adi() }}</span></h3>
+							<h5><span>
+									{{ etkinlik.get_aciklama() }}</span></h5>
+							<span class="event-score">
+								Kazanılan Puan:
+								{% set etkinlik_puani = Database.getEtkinlikPuan(kullanici.get_ID(), etkinlik.get_ID(),
+								etkinlik.get_tarih())[0] %}
+								{{ etkinlik_puani }}
+							</span>
+						</div>
+					</div>
+					<div class="etkinlik-details">
+						<p><strong>Kategori:</strong> {{ etkinlik.get_kategori() }}</p>
+						<p><strong>Tarih ve Saat:</strong> {{ etkinlik.get_tarih().replace('-', '/')}} {{
+							etkinlik.get_saat() }}</p>
+						<p><strong>Etkinlik Süresi:</strong> {{ etkinlik.get_etkinlik_suresi() }} Saat</p>
+						<p><strong>Konum:</strong> {{ etkinlik.get_konum() }}</p>
+						<a href="{{ url_for('event_details', etkinlik_id=etkinlik.get_ID()) }}" class="btn btn-primary">
+							Etkinlik Detayları
+						</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</section>
+
+	</div>
+</body>
+
+</html>

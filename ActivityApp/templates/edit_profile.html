@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Düzenle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/edit_profile.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- navbar section -->
+    {% include 'navbar_user.html' %}
+    <!-- end navbar section -->
+    <div class="container mt-5">
+        <div id="edit-profile-container" class="form-container2">
+            <h1 class="text-center">Profil Bilgilerini Güncelle</h1>
+            <form method="POST" enctype="multipart/form-data" class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="kullanici_adi" class="form-label">Kullanıcı Adı <span
+                                style="color: brown;">(Değiştirilemez)</span></label>
+                        <input type="text" class="form-control" id="kullanici_adi" name="kullanici_adi"
+                            value="{{ kullanici.get_kullanici_adi() }}" readonly required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span
+                                style="color: brown;">(Değiştirilemez)</span></label>
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="{{ kullanici.get_email() }}" readonly required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="konum">Konum</label>
+                        <select id="konum" name="konum" class="form-control">
+                            {% for konum in hazir_konumlar %}
+                            <option value="{{ konum }}" {% if konum==kullanici.get_konum() %}selected{% endif %}>{{
+                                konum }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ilgi_alanlari" class="form-label">İlgi Alanları</label>
+                        <div id="interest-options" class="form-control"
+                            style="height: auto; overflow-y: auto; max-height: 125px;">
+                            {% for interest in hazir_ilgi_alanlari %}
+                            <div class="custom-checkbox">
+                                <input type="checkbox" name="interests" value="{{ interest }}"
+                                    id="interest-{{ loop.index }}" {% if interest in
+                                    kullanici.get_ilgi_alanlari().split(',') %}checked{% endif %}>
+                                <label for="interest-{{ loop.index }}">{{ interest }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Telefon Numarası -->
+                    <div class="mb-3">
+                        <label for="telefon_numarasi" class="form-label">Telefon Numarası</label>
+                        <input type="text" class="form-control" id="telefon_numarasi" name="telefon_numarasi"
+                            pattern="^\d{11}$" title="Telefon numarası 11 haneli olmalıdır"
+                            value="{{ kullanici.get_telefon_numarasi() }}" required>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="ad" class="form-label">Ad</label>
+                        <input type="text" class="form-control" id="ad" name="ad" value="{{ kullanici.get_ad() }}"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="soyad" class="form-label">Soyad</label>
+                        <input type="text" class="form-control" id="soyad" name="soyad"
+                            value="{{ kullanici.get_soyad() }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dogum-tarihi" class="form-label">Doğum Tarihi</label>
+                        <input type="date" id="dogum-tarihi" name="dogum_tarihi" class="form-control" required
+                            value="{{ kullanici.get_dogum_tarihi() }}">
+                    </div>
+
+                    <!-- Cinsiyet -->
+                    <div class="mb-3">
+                        <label for="cinsiyet" class="form-label">Cinsiyet</label>
+                        <select id="cinsiyet" name="cinsiyet" class="form-control" required>
+                            <option value="">Seçiniz...</option>
+                            <option value="Erkek" {% if kullanici.get_cinsiyet()=="Erkek" %}selected{% endif %}>Erkek
+                            </option>
+                            <option value="Kadın" {% if kullanici.get_cinsiyet()=="Kadın" %}selected{% endif %}>Kadın
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="profil_fotografi" class="form-label">Profil Fotoğrafı</label>
+                        <input type="file" class="form-control" id="profil_fotografi" name="profil_fotografi"
+                            accept=".jpg, image/jpeg">
+                    </div>
+                </div>
+
+                <div class="col-12 mt-5">
+                    <button type="submit" class="btn btn-primary w-100">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            // Bugünden 16 yıl geriye git
+            const year = today.getFullYear() - 16;
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Aylar 0'dan başlar
+            const day = String(today.getDate()).padStart(2, '0');
+            const maxDate = `${year}-${month}-${day}`;
+
+            // Doğum tarihi alanının max değerini ayarla
+            document.getElementById('dogum-tarihi').setAttribute('max', maxDate);
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', (event) => {
+                // İlgi alanları kontrolü
+                const interests = document.querySelectorAll('input[name="interests"]:checked');
+                if (interests.length === 0) {
+                    alert('Lütfen en az bir ilgi alanı seçiniz.');
+                    event.preventDefault(); // Formu gönderme
+                    return;
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
